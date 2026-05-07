@@ -1,0 +1,63 @@
+@use '@angular/material' as mat;
+
+// ── Custom theme ──────────────────────────────────────────────────────────────
+$primary: mat.m2-define-palette(mat.$m2-indigo-palette, 600);
+$accent: mat.m2-define-palette(mat.$m2-teal-palette, 400);
+$warn: mat.m2-define-palette(mat.$m2-red-palette);
+
+$theme: mat.m2-define-light-theme((
+  color: (primary: $primary, accent: $accent, warn: $warn),
+  typography: mat.m2-define-typography-config($font-family: "'Inter', sans-serif"),
+  density: 0
+));
+
+@include mat.all-component-themes($theme);
+
+// ── Global resets ─────────────────────────────────────────────────────────────
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  background-color: #f5f5f5;
+  color: #212121;
+}
+
+.fill-remaining-space { flex: 1 1 auto; }
+
+.page-header {
+  margin-bottom: 24px;
+  h1 { font-size: 1.75rem; font-weight: 700; margin: 0 0 4px; }
+  p  { color: #757575; margin: 0; }
+}
+
+.mat-mdc-card { border-radius: 12px !important; }
+
+.chip-aprovado  { background-color: #e8f5e9 !important; color: #2e7d32 !important; }
+.chip-irregular { background-color: #ffebee !important; color: #c62828 !important; }
+.chip-pendente  { background-color: #fff8e1 !important; color: #f57f17 !important; }
+.chip-rascunho  { background-color: #f3e5f5 !important; color: #6a1b9a !important; }
+
+.loading-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px;
+  color: #9e9e9e;
+}
+
+.empty-state {
+  padding: 48px;
+  text-align: center;
+  color: #9e9e9e;
+}
+
+mat-progress-bar { border-radius: 4px; }
+
+.snack-success .mdc-snackbar__surface { background-color: #2e7d32 !important; }
+.snack-error   .mdc-snackbar__surface { background-color: #c62828 !important; }
+
+@media (max-width: 768px) {
+  .page-header h1 { font-size: 1.35rem; }
+}

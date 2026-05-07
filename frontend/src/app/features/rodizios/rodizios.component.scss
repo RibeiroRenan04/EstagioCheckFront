@@ -1,0 +1,8 @@
+.form-card { margin-bottom: 16px; }
+.form-row { display: flex; flex-wrap: wrap; gap: 12px; mat-form-field { flex: 1; min-width: 180px; } }
+.form-actions { display: flex; gap: 8px; align-items: center; padding-top: 8px; }
+.group-panel { margin-bottom: 8px; }
+.schedules-list { padding: 8px 0; }
+.schedule-item { display: flex; align-items: center; gap: 12px; padding: 6px 0; border-bottom: 1px solid #f5f5f5; color: #444; font-size: 0.9rem; }
+.schedule-shift, .schedule-type { font-size: 0.8rem; background: #e8eaf6; color: #3949ab; padding: 2px 8px; border-radius: 12px; }
+.empty-state.small { color: #999; font-size: 0.85rem; padding: 8px 0; }

@@ -1,0 +1,23 @@
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  padding: 20px;
+  text-align: center;
+  .stat-icon { font-size: 36px; width: 36px; height: 36px; margin-bottom: 8px; &.blue { color: #3949ab; } &.green { color: #00897b; } &.orange { color: #f57c00; } &.purple { color: #7b1fa2; } }
+  .stat-value { font-size: 2rem; font-weight: 700; }
+  .stat-label { color: #666; font-size: 0.8rem; }
+}
+.pendencies-card { margin-bottom: 24px; }
+.pendency-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+  .pendency-date { color: #666; font-size: 0.85rem; min-width: 90px; }
+  .pendency-reason { flex: 1; font-size: 0.9rem; }
+}

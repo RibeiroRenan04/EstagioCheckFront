@@ -1,0 +1,14 @@
+.schedule-card, .open-checkin, .register-card, .no-schedule { margin-bottom: 16px; }
+.no-schedule { text-align: center; padding: 32px; color: #999; mat-icon { font-size: 48px; width: 48px; height: 48px; } }
+.gps-section { margin-bottom: 16px; }
+.photo-section { margin-bottom: 16px; }
+.photo-label {
+  display: flex; align-items: center; gap: 8px; cursor: pointer;
+  padding: 12px; border: 2px dashed #ccc; border-radius: 8px;
+  color: #666; transition: border-color 0.2s;
+  &:hover, &.has-photo { border-color: #3949ab; color: #3949ab; }
+}
+.photo-preview { max-width: 100%; max-height: 200px; border-radius: 8px; display: block; margin-top: 8px; }
+.full-width { width: 100%; }
+mat-card-actions { padding: 16px; }
+button { min-width: 200px; }
