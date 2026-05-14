@@ -1,5 +1,5 @@
 import { Component, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, TitleCasePipe } from '@angular/common';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -7,6 +7,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../core/services/auth.service';
 
 interface NavItem {
@@ -20,9 +21,9 @@ interface NavItem {
   selector: 'app-layout',
   standalone: true,
   imports: [
-    CommonModule, RouterOutlet, RouterLink, RouterLinkActive,
+    CommonModule, TitleCasePipe, RouterOutlet, RouterLink, RouterLinkActive,
     MatToolbarModule, MatSidenavModule, MatListModule,
-    MatIconModule, MatButtonModule, MatDividerModule
+    MatIconModule, MatButtonModule, MatDividerModule, MatTooltipModule
   ],
   templateUrl: './app-layout.component.html',
   styleUrls: ['./app-layout.component.scss']

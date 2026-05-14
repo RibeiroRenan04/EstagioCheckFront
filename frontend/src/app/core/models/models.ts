@@ -4,6 +4,8 @@ export interface AuthResponse {
   email: string;
   fullName: string;
   role: 'aluno' | 'preceptor' | 'supervisor';
+  mustChangePassword?: boolean;
+  mustSetEmail?: boolean;
 }
 
 export interface RegisterDto {
@@ -109,11 +111,45 @@ export interface UserDto {
   id: string;
   fullName: string;
   email: string;
+  rgm?: string;
   matricula?: string;
   role: string;
   groupId?: string;
   groupCode?: string;
   groupName?: string;
+  semester?: 7 | 8;
+  shift?: 'manha' | 'tarde' | 'noite';
+  mustChangePassword?: boolean;
+  mustSetEmail?: boolean;
+  isActive?: boolean;
+}
+
+export interface SemesterHistory {
+  id: string;
+  userId: string;
+  semester: number;
+  shift: string;
+  startDate: string;
+  endDate?: string;
+  totalHours: number;
+}
+
+export interface BulkImportStudent {
+  rgm: string;
+  fullName: string;
+  semester: 7 | 8;
+  shift: 'manha' | 'tarde' | 'noite';
+}
+
+export interface BulkImportResult {
+  imported: number;
+  updated: number;
+  errors: { rgm: string; reason: string }[];
+}
+
+export interface AdvanceSemesterResult {
+  advanced: number;
+  graduated: number;
 }
 
 export interface ReportRow {
