@@ -1,8 +1,8 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { tap, catchError } from 'rxjs/operators';
-import { Observable, throwError } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthResponse, LoginDto, RegisterDto } from '../models/models';
 
@@ -31,6 +31,28 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.api}/register`, dto).pipe(
       tap(res => this.persist(res))
     );
+  }
+
+  /** Primeiro acesso: define e-mail acadêmico e nova senha */
+  firstAccess(email: string, newPassword: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.api}/first-access`, { email, newPassword }).pipe(
+      tap(res => this.persist(res))
+    );
+  }
+
+  /** Envia código de recuperação de senha para o e-mail @cs.udf.edu.br */
+  forgotPassword(email: string): Observable<void> {
+    return this.http.post<void>(`${this.api}/forgot-password`, { email });
+  }
+
+  /** Verifica se o código recebido por e-mail é válido */
+  verifyResetCode(email: string, code: string): Observable<void> {
+    return this.http.post<void>(`${this.api}/verify-reset-code`, { email, code });
+  }
+
+  /** Redefine a senha usando o código validado */
+  resetPassword(email: string, code: string, newPassword: string): Observable<void> {
+    return this.http.post<void>(`${this.api}/reset-password`, { email, code, newPassword });
   }
 
   logout(): void {

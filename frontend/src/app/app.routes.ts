@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, guestGuard } from './core/guards/auth.guard';
+import { authGuard, guestGuard, firstAccessGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
@@ -8,6 +8,11 @@ export const routes: Routes = [
     path: 'auth',
     canActivate: [guestGuard],
     loadComponent: () => import('./features/auth/auth.component').then(m => m.AuthComponent)
+  },
+  {
+    path: 'primeiro-acesso',
+    canActivate: [firstAccessGuard],
+    loadComponent: () => import('./features/primeiro-acesso/primeiro-acesso.component').then(m => m.PrimeiroAcessoComponent)
   },
   {
     path: 'app',
