@@ -42,7 +42,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           # ⚠️ ALTERE para o nome completo do seu repositório consolidado:
-          repository: RibeiroRenan04/EstagioCheck
+          repository: RibeiroRenan04/TG1_UDF_enfermagem
           token: ${{ secrets.PAT_TOKEN }}
           path: consolidated
           fetch-depth: 1
