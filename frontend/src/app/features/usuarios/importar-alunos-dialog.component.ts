@@ -27,6 +27,7 @@ import { BulkImportStudent, BulkImportResult } from '../../core/models/models';
         Envie um arquivo <strong>Excel (.xlsx)</strong> ou <strong>CSV</strong> com as colunas
         <code>RGM</code> e <code>Nome</code> (opcionalmente <code>Semestre</code> e <code>Turno</code>).<br>
         Alunos novos recebem a senha igual ao RGM e deverão alterá-la no primeiro acesso.
+        O e-mail institucional (<code>nome.sobrenome&#64;cs.udf.edu.br</code>) é gerado automaticamente.
       </p>
 
       <div class="defaults-row">

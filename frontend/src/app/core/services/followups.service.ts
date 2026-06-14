@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { FormativeFollowup } from '../models/models';
+import { FormativeFollowup, StudentLookup } from '../models/models';
 
 @Injectable({ providedIn: 'root' })
 export class FollowupsService {
@@ -11,6 +11,11 @@ export class FollowupsService {
 
   getAll(): Observable<FormativeFollowup[]> {
     return this.http.get<FormativeFollowup[]>(this.api);
+  }
+
+  /** Busca um aluno pelo RGM (nome + id) para preencher o acompanhamento. */
+  getStudentByRgm(rgm: string): Observable<StudentLookup> {
+    return this.http.get<StudentLookup>(`${this.api}/student-by-rgm/${encodeURIComponent(rgm)}`);
   }
 
   get(id: string): Observable<FormativeFollowup> {

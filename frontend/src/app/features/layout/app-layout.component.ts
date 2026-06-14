@@ -35,6 +35,7 @@ export class AppLayoutComponent {
     { path: '/app',             label: 'Painel',            icon: 'dashboard',        roles: ['aluno','preceptor','supervisor'] },
     { path: '/app/check-in',    label: 'Registrar presença', icon: 'location_on',      roles: ['aluno'] },
     { path: '/app/historico',   label: 'Meu histórico',      icon: 'assignment',       roles: ['aluno'] },
+    { path: '/app/certificados', label: 'Certificados',      icon: 'workspace_premium', roles: ['aluno','supervisor'] },
     { path: '/app/acompanhamentos', label: 'Acompanhamentos', icon: 'description',    roles: ['aluno','preceptor','supervisor'] },
     { path: '/app/preceptor',   label: 'Meus alunos',        icon: 'star',             roles: ['preceptor'] },
     { path: '/app/locais',      label: 'Locais',             icon: 'business',         roles: ['supervisor'] },

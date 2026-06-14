@@ -39,7 +39,7 @@
               <div class="student-avatar">{{ s.fullName.charAt(0).toUpperCase() }}</div>
               <div class="student-info">
                 <div class="student-name">{{ s.fullName }}</div>
-                <div class="student-meta">RGM: {{ s.rgm || s.matricula || '—' }}</div>
+                <div class="student-meta">RGM: {{ s.rgm || '—' }}</div>
               </div>
               <mat-chip *ngIf="s.mustChangePassword || s.mustSetEmail" class="chip-pending-access">
                 Pendente 1° acesso
@@ -59,7 +59,7 @@
               <div class="student-avatar">{{ s.fullName.charAt(0).toUpperCase() }}</div>
               <div class="student-info">
                 <div class="student-name">{{ s.fullName }}</div>
-                <div class="student-meta">RGM: {{ s.rgm || s.matricula || '—' }}</div>
+                <div class="student-meta">RGM: {{ s.rgm || '—' }}</div>
               </div>
               <div class="student-email">{{ s.email || '—' }}</div>
             </div>
@@ -85,7 +85,7 @@
           <div class="student-avatar inactive-avatar">{{ s.fullName.charAt(0).toUpperCase() }}</div>
           <div class="student-info">
             <div class="student-name">{{ s.fullName }}</div>
-            <div class="student-meta">RGM: {{ s.rgm || s.matricula || '—' }}</div>
+            <div class="student-meta">RGM: {{ s.rgm || '—' }}</div>
           </div>
           <div class="student-email">{{ s.email || '—' }}</div>
         </div>

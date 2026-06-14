@@ -1,25 +1,25 @@
-import {
-  SharedResizeObserver
-} from "./chunk-LHM2OHMJ.js";
-import {
-  MAT_RIPPLE_GLOBAL_OPTIONS,
-  MatRipple
-} from "./chunk-4JWAUIKU.js";
-import {
-  _StructuralStylesLoader
-} from "./chunk-WJQN2TAM.js";
-import "./chunk-3L4HQWXY.js";
 import "./chunk-OIBNGD5S.js";
 import {
   CdkPortal,
   CdkPortalOutlet,
   TemplatePortal
-} from "./chunk-QK6P4PRO.js";
+} from "./chunk-7TUF7ZLH.js";
+import {
+  SharedResizeObserver
+} from "./chunk-3LHMBKAU.js";
 import {
   CdkScrollable,
   ViewportRuler
-} from "./chunk-2CSCGX5M.js";
-import "./chunk-WLNWJQO7.js";
+} from "./chunk-7M5AT44P.js";
+import "./chunk-D4OTJLMO.js";
+import {
+  MAT_RIPPLE_GLOBAL_OPTIONS,
+  MatRipple
+} from "./chunk-ZUX4QO7E.js";
+import {
+  _StructuralStylesLoader
+} from "./chunk-V7DYLXW5.js";
+import "./chunk-RCIMDD2R.js";
 import "./chunk-42FJBLFI.js";
 import "./chunk-IBYU652R.js";
 import "./chunk-2O4WY5GE.js";
@@ -33,19 +33,19 @@ import {
   SPACE,
   _IdGenerator,
   hasModifierKey
-} from "./chunk-EFD44WVP.js";
+} from "./chunk-T7WTUFKK.js";
+import {
+  Directionality
+} from "./chunk-IE4IJEAP.js";
 import {
   _CdkPrivateStyleLoader,
   _bindEventWithOptions
-} from "./chunk-GOEJA5DN.js";
+} from "./chunk-M7FJGR3W.js";
 import {
   Platform
-} from "./chunk-74EBDBOU.js";
-import {
-  Directionality
-} from "./chunk-YLKUNLXS.js";
-import "./chunk-TPBASGV6.js";
-import "./chunk-NPKJYDNW.js";
+} from "./chunk-GUIVHD72.js";
+import "./chunk-Z4CGE25J.js";
+import "./chunk-D5ZYCVJZ.js";
 import {
   ANIMATION_MODULE_TYPE,
   ChangeDetectionStrategy,
@@ -75,7 +75,6 @@ import {
   computed,
   forwardRef,
   inject,
-  merge,
   numberAttribute,
   setClassMetadata,
   signal,
@@ -115,7 +114,11 @@ import {
   ɵɵtext,
   ɵɵtextInterpolate,
   ɵɵviewQuery
-} from "./chunk-ZTRFOHWQ.js";
+} from "./chunk-ERP4OLGU.js";
+import "./chunk-WMWTRTCA.js";
+import {
+  merge
+} from "./chunk-QO67QQ3F.js";
 import {
   BehaviorSubject,
   EMPTY,
@@ -130,7 +133,7 @@ import {
   switchMap,
   takeUntil,
   timer
-} from "./chunk-LVZWYA6F.js";
+} from "./chunk-PADBOZH3.js";
 import "./chunk-WDMUDEB6.js";
 
 // node_modules/@angular/material/fesm2022/tabs.mjs

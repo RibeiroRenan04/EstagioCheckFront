@@ -3,7 +3,11 @@ import { authGuard, guestGuard, firstAccessGuard } from './core/guards/auth.guar
 import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/app', pathMatch: 'full' },
+  {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () => import('./features/landing/landing.component').then(m => m.LandingComponent)
+  },
   {
     path: 'auth',
     canActivate: [guestGuard],
@@ -61,6 +65,11 @@ export const routes: Routes = [
         path: 'relatorios',
         canActivate: [roleGuard(['supervisor'])],
         loadComponent: () => import('./features/relatorios/relatorios.component').then(m => m.RelatoriosComponent)
+      },
+      {
+        path: 'certificados',
+        canActivate: [roleGuard(['aluno', 'supervisor'])],
+        loadComponent: () => import('./features/certificados/certificados.component').then(m => m.CertificadosComponent)
       }
     ]
   },

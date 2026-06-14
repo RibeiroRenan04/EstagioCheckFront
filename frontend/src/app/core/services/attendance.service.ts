@@ -32,6 +32,7 @@ export class AttendanceService {
     locationId?: string;
     activitiesDescription?: string;
     photoBase64?: string;
+    accuracyMeters?: number;
   }): Observable<AttendanceRecord> {
     return this.http.post<AttendanceRecord>(this.api, dto);
   }

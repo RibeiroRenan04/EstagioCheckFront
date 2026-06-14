@@ -33,8 +33,12 @@ export class AcompanhamentosComponent implements OnInit {
   selectedFollowup = signal<FormativeFollowup | null>(null);
   role = this.auth.role;
 
+  studentName = signal<string>('');
+  lookingUp = signal(false);
+
   form = this.fb.group({
-    studentId: ['', Validators.required],
+    rgm: ['', Validators.required],
+    studentId: [''], // preenchido automaticamente pela busca por RGM
     scheduleId: [''],
     periodo: [''],
     posturaResponsabilidade: [3, [Validators.min(1), Validators.max(5)]],
@@ -64,8 +68,25 @@ export class AcompanhamentosComponent implements OnInit {
     this.followupsService.getAll().subscribe({ next: (f) => { this.followups.set(f); this.loading.set(false); }, error: () => this.loading.set(false) });
   }
 
+  /** Busca o aluno pelo RGM e preenche o nome ao lado. */
+  lookupRgm(): void {
+    const rgm = (this.form.get('rgm')?.value ?? '').trim();
+    this.studentName.set('');
+    this.form.patchValue({ studentId: '' });
+    if (!rgm) return;
+    this.lookingUp.set(true);
+    this.followupsService.getStudentByRgm(rgm).subscribe({
+      next: (s) => { this.studentName.set(s.fullName); this.form.patchValue({ studentId: s.studentId }); this.lookingUp.set(false); },
+      error: () => { this.studentName.set('Aluno não encontrado'); this.lookingUp.set(false); }
+    });
+  }
+
   save(): void {
     if (this.form.invalid) return;
+    if (!this.form.get('studentId')?.value) {
+      this.snackBar.open('Informe um RGM válido de aluno.', '', { duration: 3000 });
+      return;
+    }
     const dto = this.form.value as any;
     const op = this.selectedFollowup()
       ? this.followupsService.update(this.selectedFollowup()!.id, dto)
@@ -88,5 +109,5 @@ export class AcompanhamentosComponent implements OnInit {
     this.followupsService.finalizeStudent(id, name).subscribe({ next: () => { this.snackBar.open('Assinado pelo aluno!', '', { duration: 2000 }); this.load(); }, error: () => this.snackBar.open('Erro', '', { duration: 3000 }) });
   }
 
-  openCreate(): void { this.selectedFollowup.set(null); this.form.reset({ posturaResponsabilidade: 3, posturaPontualidade: 3, posturaEtica: 3, comunicacaoEquipe: 3, comunicacaoPaciente: 3, comunicacaoEscuta: 3, organizacaoPlanejamento: 3, organizacaoSeguranca: 3, organizacaoRegistros: 3, participacaoIniciativa: 3, participacaoAprendizado: 3, participacaoAutocritica: 3 }); this.showForm.set(true); }
+  openCreate(): void { this.selectedFollowup.set(null); this.studentName.set(''); this.form.reset({ rgm: '', studentId: '', periodo: '', posturaResponsabilidade: 3, posturaPontualidade: 3, posturaEtica: 3, comunicacaoEquipe: 3, comunicacaoPaciente: 3, comunicacaoEscuta: 3, organizacaoPlanejamento: 3, organizacaoSeguranca: 3, organizacaoRegistros: 3, participacaoIniciativa: 3, participacaoAprendizado: 3, participacaoAutocritica: 3 }); this.showForm.set(true); }
 }

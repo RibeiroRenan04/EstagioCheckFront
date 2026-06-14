@@ -31,6 +31,18 @@ export interface Location {
   isInstitution: boolean;
   shiftStart: string;
   shiftEnd: string;
+  codigoCnes?: string;
+}
+
+/** Estabelecimento de saúde retornado pela busca no CNES (Busca Saúde DF). */
+export interface BuscaSaudeEstabelecimento {
+  codigoCnes: string;
+  nome: string;
+  endereco: string;
+  latitude: number;
+  longitude: number;
+  telefone?: string;
+  turnoAtendimento?: string;
 }
 
 export interface StudentGroup {
@@ -112,7 +124,6 @@ export interface UserDto {
   fullName: string;
   email: string;
   rgm?: string;
-  matricula?: string;
   role: string;
   groupId?: string;
   groupCode?: string;
@@ -163,6 +174,28 @@ export interface ReportRow {
   pendencyHours: number;
   progressPercent: number;
   certificateReleased: boolean;
+}
+
+export interface StudentLookup {
+  studentId: string;
+  fullName: string;
+  rgm?: string;
+}
+
+export interface Certificate {
+  studentId: string;
+  studentName: string;
+  rgm?: string;
+  groupName?: string;
+  completedHours: number;
+  requiredHours: number;
+  progressPercent: number;
+  eligible: boolean;
+  periodLabel?: string;
+  locations: string[];
+  institution?: string;
+  issuedAt: string;
+  verificationCode: string;
 }
 
 export interface Evaluation {

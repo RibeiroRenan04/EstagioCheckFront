@@ -10,10 +10,17 @@
   <mat-card-header><mat-card-title>Novo acompanhamento formativo</mat-card-title></mat-card-header>
   <mat-card-content>
     <form [formGroup]="form" (ngSubmit)="save()">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>ID do aluno</mat-label>
-        <input matInput formControlName="studentId">
-      </mat-form-field>
+      <div class="student-row">
+        <mat-form-field appearance="outline" class="rgm-field">
+          <mat-label>RGM do aluno</mat-label>
+          <input matInput formControlName="rgm" (change)="lookupRgm()" (keyup.enter)="lookupRgm()">
+          <mat-spinner matSuffix *ngIf="lookingUp()" diameter="18"></mat-spinner>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="name-field">
+          <mat-label>Nome do aluno</mat-label>
+          <input matInput [value]="studentName()" readonly placeholder="Preenchido pelo RGM">
+        </mat-form-field>
+      </div>
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Período</mat-label>
         <input matInput formControlName="periodo">
@@ -22,38 +29,32 @@
       <h3>Postura Profissional</h3>
       <div class="score-grid">
         <div class="score-item">
-          <label>Pontualidade</label>
+          <div class="score-head"><label>Pontualidade</label><span>{{ form.get('posturaPontualidade')?.value }}</span></div>
           <mat-slider min="1" max="5" step="1"><input matSliderThumb formControlName="posturaPontualidade"></mat-slider>
-          <span>{{ form.get('posturaPontualidade')?.value }}</span>
         </div>
         <div class="score-item">
-          <label>Ética</label>
+          <div class="score-head"><label>Ética</label><span>{{ form.get('posturaEtica')?.value }}</span></div>
           <mat-slider min="1" max="5" step="1"><input matSliderThumb formControlName="posturaEtica"></mat-slider>
-          <span>{{ form.get('posturaEtica')?.value }}</span>
         </div>
         <div class="score-item">
-          <label>Responsabilidade</label>
+          <div class="score-head"><label>Responsabilidade</label><span>{{ form.get('posturaResponsabilidade')?.value }}</span></div>
           <mat-slider min="1" max="5" step="1"><input matSliderThumb formControlName="posturaResponsabilidade"></mat-slider>
-          <span>{{ form.get('posturaResponsabilidade')?.value }}</span>
         </div>
       </div>
 
       <h3>Comunicação</h3>
       <div class="score-grid">
         <div class="score-item">
-          <label>Equipe</label>
+          <div class="score-head"><label>Equipe</label><span>{{ form.get('comunicacaoEquipe')?.value }}</span></div>
           <mat-slider min="1" max="5" step="1"><input matSliderThumb formControlName="comunicacaoEquipe"></mat-slider>
-          <span>{{ form.get('comunicacaoEquipe')?.value }}</span>
         </div>
         <div class="score-item">
-          <label>Paciente</label>
+          <div class="score-head"><label>Paciente</label><span>{{ form.get('comunicacaoPaciente')?.value }}</span></div>
           <mat-slider min="1" max="5" step="1"><input matSliderThumb formControlName="comunicacaoPaciente"></mat-slider>
-          <span>{{ form.get('comunicacaoPaciente')?.value }}</span>
         </div>
         <div class="score-item">
-          <label>Escuta ativa</label>
+          <div class="score-head"><label>Escuta ativa</label><span>{{ form.get('comunicacaoEscuta')?.value }}</span></div>
           <mat-slider min="1" max="5" step="1"><input matSliderThumb formControlName="comunicacaoEscuta"></mat-slider>
-          <span>{{ form.get('comunicacaoEscuta')?.value }}</span>
         </div>
       </div>
 

@@ -1,5 +1,25 @@
 .form-card { margin-bottom: 16px; }
 
+.header-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.search-bar {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+
+  .search-input { flex: 1; }
+}
+
+.search-loading {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: 1fr;

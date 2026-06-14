@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuthResponse, LoginDto, RegisterDto } from '../models/models';
+import { AuthResponse, LoginDto } from '../models/models';
 
 const TOKEN_KEY = 'ec_token';
 const USER_KEY  = 'ec_user';
@@ -23,12 +23,6 @@ export class AuthService {
 
   login(dto: LoginDto): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.api}/login`, dto).pipe(
-      tap(res => this.persist(res))
-    );
-  }
-
-  register(dto: RegisterDto): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.api}/register`, dto).pipe(
       tap(res => this.persist(res))
     );
   }

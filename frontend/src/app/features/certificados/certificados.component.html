@@ -1,0 +1,104 @@
+<div class="page-header">
+  <h1>Certificados</h1>
+</div>
+
+<div *ngIf="loading()" class="loading-overlay"><mat-spinner diameter="48"></mat-spinner></div>
+
+<!-- Pré-visualização do certificado selecionado -->
+<mat-card *ngIf="!loading() && selected() as cert" class="preview-card">
+  <mat-card-content>
+    <div class="preview-actions">
+      <button mat-button (click)="voltar()"><mat-icon>arrow_back</mat-icon> Voltar</button>
+      <button mat-raised-button color="primary" (click)="imprimir(cert)">
+        <mat-icon>print</mat-icon> Imprimir / Salvar PDF
+      </button>
+    </div>
+
+    <div class="cert-preview">
+      <div class="cert-title">CERTIFICADO</div>
+      <div class="cert-sub">Estágio Supervisionado em Enfermagem</div>
+      <p class="cert-body">
+        Certificamos que <strong>{{ cert.studentName }}</strong>
+        <ng-container *ngIf="cert.rgm">, RGM {{ cert.rgm }}</ng-container>,
+        cumpriu <strong>{{ cert.completedHours }} horas</strong> das
+        <strong>{{ cert.requiredHours }} horas</strong> exigidas de estágio supervisionado<ng-container *ngIf="cert.groupName"> (turma {{ cert.groupName }})</ng-container>,
+        no período de <strong>{{ cert.periodLabel || '—' }}</strong>,
+        nos seguintes campos de prática: {{ cert.locations.length ? cert.locations.join(', ') : '—' }}.
+      </p>
+      <div class="cert-footer">
+        <span>{{ cert.institution || 'Centro Universitário do Distrito Federal – UDF' }}</span>
+        <span>Emitido em {{ cert.issuedAt | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <div class="cert-code">Código de verificação: {{ cert.verificationCode }}</div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<!-- Visão do aluno -->
+<mat-card *ngIf="!loading() && !selected() && isAluno()">
+  <mat-card-content>
+    <ng-container *ngIf="myCert() as cert; else semDados">
+      <h2 class="hours-title">Minha carga horária</h2>
+      <div class="hours-row">
+        <span class="hours-value">{{ cert.completedHours }}h</span>
+        <span class="hours-of">de {{ cert.requiredHours }}h exigidas</span>
+        <mat-chip [class.ok]="cert.eligible" [class.pending]="!cert.eligible">
+          {{ cert.eligible ? 'Concluído' : 'Em andamento' }}
+        </mat-chip>
+      </div>
+      <mat-progress-bar mode="determinate" [value]="cert.progressPercent"></mat-progress-bar>
+      <p class="hours-pct">{{ cert.progressPercent }}% concluído</p>
+
+      <button mat-raised-button color="primary" [disabled]="!cert.eligible" (click)="abrir(cert)">
+        <mat-icon>workspace_premium</mat-icon> Emitir certificado
+      </button>
+      <p *ngIf="!cert.eligible" class="hint">
+        O certificado ficará disponível quando você atingir a carga horária exigida.
+      </p>
+    </ng-container>
+    <ng-template #semDados>
+      <div class="empty-state"><mat-icon>workspace_premium</mat-icon><p>Você ainda não está vinculado a uma turma com rodízios.</p></div>
+    </ng-template>
+  </mat-card-content>
+</mat-card>
+
+<!-- Visão do supervisor -->
+<mat-card *ngIf="!loading() && !selected() && !isAluno()">
+  <mat-card-content>
+    <table mat-table [dataSource]="list()" class="full-width" *ngIf="list().length; else vazio">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Aluno</th>
+        <td mat-cell *matCellDef="let c">{{ c.studentName }}</td>
+      </ng-container>
+      <ng-container matColumnDef="group">
+        <th mat-header-cell *matHeaderCellDef>Turma</th>
+        <td mat-cell *matCellDef="let c">{{ c.groupName || '—' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="hours">
+        <th mat-header-cell *matHeaderCellDef>Carga horária</th>
+        <td mat-cell *matCellDef="let c">{{ c.completedHours }}h / {{ c.requiredHours }}h ({{ c.progressPercent }}%)</td>
+      </ng-container>
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Situação</th>
+        <td mat-cell *matCellDef="let c">
+          <mat-chip [class.ok]="c.eligible" [class.pending]="!c.eligible">
+            {{ c.eligible ? 'Concluído' : 'Em andamento' }}
+          </mat-chip>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let c">
+          <button mat-stroked-button color="primary" [disabled]="!c.eligible" (click)="abrir(c)">
+            <mat-icon>workspace_premium</mat-icon> Emitir
+          </button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <ng-template #vazio>
+      <div class="empty-state"><mat-icon>workspace_premium</mat-icon><p>Nenhum aluno vinculado a turmas.</p></div>
+    </ng-template>
+  </mat-card-content>
+</mat-card>

@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,13 +11,13 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { LocationsService } from '../../core/services/locations.service';
-import { Location } from '../../core/models/models';
+import { Location, BuscaSaudeEstabelecimento } from '../../core/models/models';
 
 @Component({
   selector: 'app-locais',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule,
+    CommonModule, ReactiveFormsModule, FormsModule,
     MatCardModule, MatButtonModule, MatIconModule, MatFormFieldModule,
     MatInputModule, MatTableModule, MatProgressSpinnerModule, MatSnackBarModule, MatDialogModule
   ],
@@ -30,6 +30,15 @@ export class LocaisComponent implements OnInit {
   showForm = signal(false);
   editing = signal<Location | null>(null);
   displayedColumns = ['name', 'address', 'radius', 'shift', 'actions'];
+
+  // Busca Saúde (CNES)
+  searchOpen = signal(false);
+  searching = signal(false);
+  searched = signal(false);
+  searchTerm = '';
+  searchResults = signal<BuscaSaudeEstabelecimento[]>([]);
+  importedCnes = signal<Set<string>>(new Set());
+  buscaColumns = ['nome', 'endereco', 'telefone', 'turno', 'acoes'];
 
   form = this.fb.group({
     name: ['', Validators.required],
@@ -47,7 +56,43 @@ export class LocaisComponent implements OnInit {
   ngOnInit(): void { this.load(); }
 
   load(): void {
-    this.locationsService.getAll().subscribe({ next: (l) => { this.locations.set(l); this.loading.set(false); }, error: () => this.loading.set(false) });
+    this.locationsService.getAll().subscribe({
+      next: (l) => {
+        this.locations.set(l);
+        this.importedCnes.set(new Set(l.map(x => x.codigoCnes).filter((c): c is string => !!c)));
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false)
+    });
+  }
+
+  // ── Busca Saúde (CNES) ─────────────────────────────────────────────────────
+  toggleSearch(): void {
+    this.searchOpen.update(v => !v);
+    if (this.searchOpen()) this.showForm.set(false);
+  }
+
+  runSearch(): void {
+    this.searching.set(true);
+    this.locationsService.buscaSaude(this.searchTerm).subscribe({
+      next: (r) => { this.searchResults.set(r); this.searching.set(false); this.searched.set(true); },
+      error: () => { this.searching.set(false); this.searched.set(true); this.snackBar.open('Erro ao consultar Busca Saúde', '', { duration: 3000 }); }
+    });
+  }
+
+  isImported(est: BuscaSaudeEstabelecimento): boolean {
+    return this.importedCnes().has(est.codigoCnes);
+  }
+
+  importUnidade(est: BuscaSaudeEstabelecimento): void {
+    this.locationsService.importFromBuscaSaude(est).subscribe({
+      next: () => { this.snackBar.open(`"${est.nome}" importado!`, '', { duration: 2500 }); this.load(); },
+      error: (err) => {
+        const msg = err?.status === 409 ? 'Unidade já importada' : 'Erro ao importar unidade';
+        this.snackBar.open(msg, '', { duration: 3000 });
+        if (err?.status === 409) this.importedCnes.update(s => new Set(s).add(est.codigoCnes));
+      }
+    });
   }
 
   openCreate(): void { this.editing.set(null); this.form.reset({ radiusMeters: 100, isInstitution: true, shiftStart: '07:00', shiftEnd: '13:00', latitude: 0, longitude: 0 }); this.showForm.set(true); }

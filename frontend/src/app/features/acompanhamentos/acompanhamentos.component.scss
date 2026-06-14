@@ -1,6 +1,15 @@
 .form-card, .followup-card { margin-bottom: 16px; }
 .full-width { width: 100%; }
 
+.student-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  .rgm-field { flex: 1 1 160px; }
+  .name-field { flex: 2 1 240px; }
+}
+
 h3 {
   font-size: 0.875rem;
   font-weight: 600;
@@ -13,18 +22,28 @@ h3 {
 
 .score-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 4px 24px;
   margin-bottom: 12px;
 }
 
 .score-item {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
 
-  label { min-width: 100px; font-size: 0.82rem; color: #6B7280; font-weight: 500; }
-  span  { font-weight: 700; min-width: 20px; color: #00ADEE; font-size: 0.9rem; }
+  .score-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    label { font-size: 0.82rem; color: #6B7280; font-weight: 500; }
+    span  { font-weight: 700; color: #00ADEE; font-size: 0.9rem; }
+  }
+
+  mat-slider {
+    width: 100%;
+    margin: 0;
+  }
 }
 
 .form-actions {

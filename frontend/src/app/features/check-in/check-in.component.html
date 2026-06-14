@@ -34,22 +34,45 @@
 
     <!-- GPS -->
     <div class="gps-section">
+      <span class="step-label">1. Localização</span>
       <button mat-stroked-button (click)="getLocation()" [disabled]="gettingLocation()">
         <mat-spinner *ngIf="gettingLocation()" diameter="18"></mat-spinner>
         <mat-icon *ngIf="!gettingLocation()">my_location</mat-icon>
         <span *ngIf="!gettingLocation() && !lat()">Capturar localização</span>
         <span *ngIf="lat()">{{ lat()! | number:'1.5-5' }}, {{ lon()! | number:'1.5-5' }}</span>
       </button>
+      <div *ngIf="distance() !== null" class="gps-info">
+        <span>Distância do local: <strong>{{ distance()! | number:'1.0-0' }} m</strong>
+          <ng-container *ngIf="accuracy()"> (precisão ±{{ accuracy()! | number:'1.0-0' }} m)</ng-container>
+        </span>
+        <span class="badge" [class.ok]="inRadius()" [class.bad]="inRadius() === false">
+          <mat-icon>{{ inRadius() ? 'check_circle' : 'error' }}</mat-icon>
+          {{ inRadius() ? 'Dentro do raio' : 'Fora do raio' }}
+        </span>
+      </div>
     </div>
 
-    <!-- Foto -->
+    <!-- Foto (câmera ao vivo) -->
     <div class="photo-section">
-      <label class="photo-label" [class.has-photo]="photoBase64()">
-        <mat-icon>camera_alt</mat-icon>
-        <span>{{ photoBase64() ? 'Foto capturada' : 'Adicionar foto (opcional)' }}</span>
-        <input type="file" accept="image/*" capture="environment" (change)="onPhotoCapture($event)" hidden>
-      </label>
-      <img *ngIf="photoBase64()" [src]="photoBase64()" class="photo-preview" alt="preview">
+      <span class="step-label">2. Foto no momento</span>
+
+      <button *ngIf="!cameraOn() && !photoBase64()" mat-stroked-button (click)="startCamera()">
+        <mat-icon>photo_camera</mat-icon> Abrir câmera
+      </button>
+
+      <div *ngIf="cameraOn()" class="camera-box">
+        <video #video autoplay playsinline muted class="camera-video"></video>
+        <button mat-raised-button color="primary" (click)="takePhoto()">
+          <mat-icon>camera</mat-icon> Tirar foto
+        </button>
+      </div>
+
+      <div *ngIf="photoBase64()" class="camera-box">
+        <img [src]="photoBase64()" class="photo-preview" alt="Foto capturada">
+        <button mat-stroked-button (click)="retakePhoto()">
+          <mat-icon>refresh</mat-icon> Refazer
+        </button>
+      </div>
     </div>
 
     <!-- Atividades (check-out apenas) -->
@@ -60,7 +83,7 @@
 
   </mat-card-content>
   <mat-card-actions>
-    <button mat-raised-button color="primary" [disabled]="!lat() || busy()"
+    <button mat-raised-button color="primary" [disabled]="!lat() || !photoBase64() || busy()"
             (click)="register(openCheckIn() ? 'check_out' : 'check_in')">
       <mat-spinner *ngIf="busy()" diameter="20"></mat-spinner>
       <span *ngIf="!busy()">{{ openCheckIn() ? 'Confirmar check-out' : 'Confirmar check-in' }}</span>
