@@ -10,7 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import * as XLSX from 'xlsx';
 import { UsersService } from '../../core/services/users.service';
-import { BulkImportStudent, BulkImportResult } from '../../core/models/models';
+import { BulkImportStudent, BulkImportResult, ImportedStudentLogin } from '../../core/models/models';
 
 @Component({
   selector: 'app-importar-alunos-dialog',
@@ -21,8 +21,55 @@ import { BulkImportStudent, BulkImportResult } from '../../core/models/models';
     MatFormFieldModule, MatIconModule, MatProgressSpinnerModule, MatDividerModule
   ],
   template: `
-    <h2 mat-dialog-title>Importar lista de alunos</h2>
-    <mat-dialog-content>
+    <h2 mat-dialog-title>{{ resultado() ? 'Importação concluída' : 'Importar lista de alunos' }}</h2>
+
+    <!-- ── Resultado: logins gerados ──────────────────────────────────────── -->
+    <mat-dialog-content *ngIf="resultado() as res">
+      <div class="resumo">
+        <span class="badge ok">{{ res.imported }} importado(s)</span>
+        <span class="badge">{{ res.updated }} atualizado(s)</span>
+        <span class="badge erro" *ngIf="res.errors.length">{{ res.errors.length }} erro(s)</span>
+      </div>
+
+      <div class="erros" *ngIf="res.errors.length">
+        <p *ngFor="let e of res.errors">{{ e }}</p>
+      </div>
+
+      <ng-container *ngIf="res.logins.length; else semLogins">
+        <div class="credenciais-box">
+          <mat-icon>vpn_key</mat-icon>
+          <div>
+            Estes são os <strong>logins gerados</strong>. A senha inicial de cada aluno é o
+            <strong>RGM</strong>, trocada no primeiro acesso.
+          </div>
+        </div>
+
+        <table class="logins">
+          <thead><tr><th>Nome</th><th>RGM</th><th>Login (e-mail)</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let l of res.logins">
+              <td>{{ l.fullName }}</td>
+              <td>{{ l.rgm }}</td>
+              <td class="email">{{ l.email }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-container>
+
+      <ng-template #semLogins>
+        <p class="hint">Nenhum login novo foi gerado — os alunos importados já possuíam e-mail.</p>
+      </ng-template>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end" *ngIf="resultado() as res">
+      <button mat-stroked-button *ngIf="res.logins.length" (click)="baixarLogins(res.logins)">
+        <mat-icon>download</mat-icon> Baixar planilha
+      </button>
+      <button mat-raised-button color="primary" (click)="dialogRef.close(res)">Concluir</button>
+    </mat-dialog-actions>
+
+    <!-- ── Envio ──────────────────────────────────────────────────────────── -->
+    <mat-dialog-content *ngIf="!resultado()">
       <p class="hint">
         Envie um arquivo <strong>Excel (.xlsx)</strong> ou <strong>CSV</strong> com as colunas
         <code>RGM</code> e <code>Nome</code> (opcionalmente <code>Semestre</code> e <code>Turno</code>).
@@ -88,7 +135,7 @@ import { BulkImportStudent, BulkImportResult } from '../../core/models/models';
       </div>
     </mat-dialog-content>
 
-    <mat-dialog-actions align="end">
+    <mat-dialog-actions align="end" *ngIf="!resultado()">
       <button mat-button (click)="dialogRef.close(null)">Fechar</button>
       <button mat-raised-button color="primary"
               [disabled]="!preview.length || busy()"
@@ -110,6 +157,22 @@ import { BulkImportStudent, BulkImportResult } from '../../core/models/models';
       code { background: #dbeafe; }
     }
     .hint-small { font-size: 0.75rem; color: #9ca3af; margin: -8px 0 12px; }
+    .resumo { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .badge {
+      font-size: 0.75rem; padding: 3px 10px; border-radius: 9999px;
+      background: #f3f4f6; color: #374151;
+      &.ok { background: #dcfce7; color: #166534; }
+      &.erro { background: #fee2e2; color: #991b1b; }
+    }
+    .erros {
+      background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px;
+      padding: 8px 10px; margin-bottom: 12px;
+      p { margin: 2px 0; font-size: 0.76rem; color: #991b1b; }
+    }
+    .logins { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .logins th { text-align: left; padding: 5px 8px; background: #f3f4f6; color: #374151; position: sticky; top: 0; }
+    .logins td { padding: 4px 8px; border-bottom: 1px solid #f3f4f6; }
+    .logins .email { font-family: ui-monospace, monospace; font-size: 0.76rem; }
     code { background: #f3f4f6; padding: 1px 4px; border-radius: 4px; font-size: 0.8rem; }
     .defaults-row { display: flex; gap: 12px; }
     .defaults-row mat-form-field { flex: 1; }
@@ -134,6 +197,8 @@ export class ImportarAlunosDialogComponent {
   fileName = '';
   preview: BulkImportStudent[] = [];
   busy = signal(false);
+  /** Resultado da importação: exibe os logins gerados antes de fechar. */
+  resultado = signal<BulkImportResult | null>(null);
 
   constructor(
     public dialogRef: MatDialogRef<ImportarAlunosDialogComponent>,
@@ -200,11 +265,31 @@ export class ImportarAlunosDialogComponent {
     if (!this.preview.length) return;
     this.busy.set(true);
     this.usersService.bulkImportStudents(this.preview).subscribe({
-      next: (res) => { this.busy.set(false); this.dialogRef.close(res); },
+      next: (res) => {
+        this.busy.set(false);
+        // Mostra os logins gerados antes de fechar: é a única vez que o
+        // supervisor vê com que e-mail cada aluno passa a entrar.
+        this.resultado.set({ ...res, errors: res.errors ?? [], logins: res.logins ?? [] });
+      },
       error: (err) => {
         this.busy.set(false);
         console.error('Erro ao importar:', err);
       }
     });
+  }
+
+  /** Planilha com os logins recém-gerados, para entregar à turma. */
+  baixarLogins(logins: ImportedStudentLogin[]): void {
+    const linhas = logins.map(l => ({
+      'Nome': l.fullName,
+      'RGM': l.rgm,
+      'Login (e-mail)': l.email,
+      'Senha inicial': l.rgm
+    }));
+    const ws = XLSX.utils.json_to_sheet(linhas);
+    ws['!cols'] = [{ wch: 32 }, { wch: 12 }, { wch: 34 }, { wch: 14 }];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Logins');
+    XLSX.writeFile(wb, `logins-alunos-${new Date().toISOString().substring(0, 10)}.xlsx`);
   }
 }
