@@ -25,10 +25,23 @@ import { BulkImportStudent, BulkImportResult } from '../../core/models/models';
     <mat-dialog-content>
       <p class="hint">
         Envie um arquivo <strong>Excel (.xlsx)</strong> ou <strong>CSV</strong> com as colunas
-        <code>RGM</code> e <code>Nome</code> (opcionalmente <code>Semestre</code> e <code>Turno</code>).<br>
-        Alunos novos recebem a senha igual ao RGM e deverão alterá-la no primeiro acesso.
-        O e-mail institucional (<code>nome.sobrenome&#64;cs.udf.edu.br</code>) é gerado automaticamente.
+        <code>RGM</code> e <code>Nome</code> (opcionalmente <code>Semestre</code> e <code>Turno</code>).
       </p>
+
+      <div class="credenciais-box">
+        <mat-icon>vpn_key</mat-icon>
+        <div>
+          <strong>Como o aluno entra no sistema</strong>
+          <ul>
+            <li><strong>Login:</strong> e-mail institucional gerado automaticamente no formato
+              <code>primeironome.ultimosobrenome&#64;cs.udf.edu.br</code>.</li>
+            <li><strong>Senha inicial:</strong> o próprio <strong>RGM</strong> informado na planilha.</li>
+            <li>No primeiro acesso o aluno confirma o e-mail e define uma senha nova.</li>
+          </ul>
+          Depois de importar, use <strong>Exportar credenciais</strong> na tela de Usuários para
+          entregar login e senha a cada aluno.
+        </div>
+      </div>
 
       <div class="defaults-row">
         <mat-form-field appearance="outline">
@@ -87,6 +100,15 @@ import { BulkImportStudent, BulkImportResult } from '../../core/models/models';
   `,
   styles: [`
     .hint { font-size: 0.85rem; color: #6B7280; margin-bottom: 12px; }
+    .credenciais-box {
+      display: flex; gap: 8px; align-items: flex-start;
+      background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af;
+      border-radius: 8px; padding: 10px 12px; margin-bottom: 16px;
+      font-size: 0.78rem; line-height: 1.5;
+      mat-icon { font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
+      ul { margin: 4px 0; padding-left: 18px; }
+      code { background: #dbeafe; }
+    }
     .hint-small { font-size: 0.75rem; color: #9ca3af; margin: -8px 0 12px; }
     code { background: #f3f4f6; padding: 1px 4px; border-radius: 4px; font-size: 0.8rem; }
     .defaults-row { display: flex; gap: 12px; }

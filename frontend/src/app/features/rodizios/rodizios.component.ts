@@ -13,10 +13,15 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { GroupsService } from '../../core/services/groups.service';
 import { LocationsService } from '../../core/services/locations.service';
 import { UsersService } from '../../core/services/users.service';
 import { StudentGroup, RotationSchedule, Location, GroupMember, UserDto } from '../../core/models/models';
+import {
+  VincularAlunosDialogComponent,
+  VincularAlunosResult
+} from '../usuarios/vincular-alunos-dialog.component';
 
 @Component({
   selector: 'app-rodizios',
@@ -25,7 +30,7 @@ import { StudentGroup, RotationSchedule, Location, GroupMember, UserDto } from '
     CommonModule, ReactiveFormsModule,
     MatCardModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule,
     MatSelectModule, MatTableModule, MatExpansionModule, MatProgressSpinnerModule,
-    MatSnackBarModule, MatTooltipModule, MatDividerModule
+    MatSnackBarModule, MatTooltipModule, MatDividerModule, MatDialogModule
   ],
   templateUrl: './rodizios.component.html',
   styleUrls: ['./rodizios.component.scss']
@@ -82,6 +87,7 @@ export class RodiziosComponent implements OnInit {
     private locationsService: LocationsService,
     private usersService: UsersService,
     private snackBar: MatSnackBar,
+    private dialog: MatDialog,
     private fb: FormBuilder
   ) {}
 
@@ -150,11 +156,33 @@ export class RodiziosComponent implements OnInit {
     });
   }
 
+  // ── Vínculo dos alunos ────────────────────────────────────────────────────
+  /**
+   * Monta a turma. É o passo que faltava para liberar a alocação: sem vínculo,
+   * o backend recusa o rodízio e o aluno não consegue fazer check-in.
+   */
+  vincularAlunos(group: StudentGroup): void {
+    const ref = this.dialog.open(VincularAlunosDialogComponent, {
+      width: '560px',
+      data: { group }
+    });
+
+    ref.afterClosed().subscribe((res: VincularAlunosResult | null) => {
+      if (!res) return;
+      this.snackBar.open(
+        `${res.vinculados} aluno(s) vinculado(s), ${res.desvinculados} desvinculado(s).`,
+        '', { duration: 3000, panelClass: 'snack-success' });
+      // Recarrega a turma para atualizar memberCount e liberar a alocação.
+      this.loadMembers(group.id);
+      this.load();
+    });
+  }
+
   // ── Alocação de rodízio ───────────────────────────────────────────────────
   abrirAlocacao(group: StudentGroup): void {
     if (!this.temAlunosVinculados(group)) {
       this.snackBar.open(
-        `A turma ${group.code} não possui alunos vinculados. Vincule os alunos em Usuários antes de alocar o rodízio.`,
+        `A turma ${group.code} não possui alunos vinculados. Use "Vincular alunos" antes de alocar o rodízio.`,
         'OK', { duration: 6000, panelClass: 'snack-error' });
       return;
     }
