@@ -101,6 +101,17 @@
         </mat-form-field>
       </div>
 
+      <!-- Preceptor ja escalado em outro local no mesmo turno/periodo. -->
+      <div class="warning-box conflict-box" *ngIf="conflitoPreceptor() as c">
+        <mat-icon>warning_amber</mat-icon>
+        <span>
+          Este preceptor já está escalado em <strong>{{ c.locationName }}</strong>
+          ({{ c.groupCode }} — {{ c.periodLabel }}) de
+          {{ c.startDate | date:'dd/MM/yy' }} a {{ c.endDate | date:'dd/MM/yy' }},
+          no mesmo turno. Confirme se ele cobre os dois locais antes de salvar.
+        </span>
+      </div>
+
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Detalhamento da atividade (opcional)</mat-label>
         <textarea matInput rows="2" formControlName="notes"

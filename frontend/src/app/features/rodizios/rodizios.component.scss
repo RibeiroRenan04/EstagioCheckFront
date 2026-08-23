@@ -184,3 +184,11 @@ h4 {
   font-size: 0.85rem;
   padding: 8px 0;
 }
+
+// Aviso de preceptor escalado em dois locais ao mesmo tempo (nao bloqueia).
+.conflict-box {
+  align-items: flex-start;
+  margin-bottom: 12px;
+
+  mat-icon { margin-top: 1px; }
+}

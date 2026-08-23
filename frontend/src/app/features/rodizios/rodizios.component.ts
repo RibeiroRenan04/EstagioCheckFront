@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -40,6 +40,10 @@ export class RodiziosComponent implements OnInit {
   locations = signal<Location[]>([]);
   preceptors = signal<UserDto[]>([]);
   schedulesByGroup = signal<Record<string, RotationSchedule[]>>({});
+  /** Todas as escalas, para detectar preceptor escalado em dois locais ao mesmo tempo. */
+  allSchedules = signal<RotationSchedule[]>([]);
+  /** Espelha o formulário de alocação para o aviso de conflito reagir a mudanças. */
+  private formValue = signal<Partial<Record<string, unknown>>>({});
   membersByGroup = signal<Record<string, GroupMember[]>>({});
   loading = signal(true);
   showGroupForm = signal(false);
@@ -91,8 +95,33 @@ export class RodiziosComponent implements OnInit {
     private fb: FormBuilder
   ) {}
 
+  /**
+   * Preceptor já escalado em outro rodízio no mesmo turno com datas sobrepostas.
+   * O backend permite essa situação — aqui é só um alerta para o supervisor
+   * confirmar se o preceptor realmente cobre os dois locais.
+   */
+  conflitoPreceptor = computed<RotationSchedule | null>(() => {
+    const v = this.formValue();
+    const preceptorId = v['preceptorId'] as string | undefined;
+    const shift       = v['shift'] as string | undefined;
+    const startDate   = v['startDate'] as string | undefined;
+    const endDate     = v['endDate'] as string | undefined;
+    if (!preceptorId || !shift || !startDate || !endDate) return null;
+
+    const emEdicao = this.editingSchedule()?.id;
+    return this.allSchedules().find(s =>
+      s.preceptorId === preceptorId &&
+      s.id !== emEdicao &&
+      s.shift === shift &&
+      (s.startDate ?? '').substring(0, 10) <= endDate &&
+      (s.endDate ?? '').substring(0, 10) >= startDate
+    ) ?? null;
+  });
+
   ngOnInit(): void {
     this.locationsService.getAll().subscribe(l => this.locations.set(l));
+    this.loadAllSchedules();
+    this.scheduleForm.valueChanges.subscribe(v => this.formValue.set(v as Record<string, unknown>));
     // Apenas preceptores: são eles que realizam o acompanhamento dos alunos alocados.
     this.usersService.getPreceptors().subscribe(p =>
       this.preceptors.set(p.filter(u => u.role === 'preceptor' && u.isActive !== false))
@@ -109,6 +138,11 @@ export class RodiziosComponent implements OnInit {
       },
       error: () => this.loading.set(false)
     });
+  }
+
+  /** Escalas de todas as turmas — base do aviso de conflito de preceptor. */
+  loadAllSchedules(): void {
+    this.groupsService.getSchedules().subscribe(s => this.allSchedules.set(s));
   }
 
   loadSchedules(groupId: string): void {
@@ -259,6 +293,7 @@ export class RodiziosComponent implements OnInit {
         this.snackBar.open(atual ? 'Alocação atualizada!' : 'Rodízio alocado!', '', { duration: 2500, panelClass: 'snack-success' });
         this.showScheduleForm.set(false);
         this.loadSchedules(v.groupId!);
+        this.loadAllSchedules();
       },
       error: (err) => {
         this.savingSchedule.set(false);
@@ -270,7 +305,11 @@ export class RodiziosComponent implements OnInit {
   excluirAlocacao(groupId: string, s: RotationSchedule): void {
     if (!confirm(`Excluir o rodízio de ${s.periodLabel} em ${s.locationName}?`)) return;
     this.groupsService.deleteSchedule(s.id).subscribe({
-      next: () => { this.snackBar.open('Alocação removida.', '', { duration: 2000 }); this.loadSchedules(groupId); },
+      next: () => {
+        this.snackBar.open('Alocação removida.', '', { duration: 2000 });
+        this.loadSchedules(groupId);
+        this.loadAllSchedules();
+      },
       error: () => this.snackBar.open('Erro ao excluir alocação', '', { duration: 3000, panelClass: 'snack-error' })
     });
   }
