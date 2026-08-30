@@ -1,11 +1,23 @@
+/** Perfis de acesso. "supervisor" é o professor responsável. */
+export type UserRole = 'aluno' | 'preceptor' | 'supervisor' | 'coordenadora';
+
 export interface AuthResponse {
   token: string;
   userId: string;
   email: string;
   fullName: string;
-  role: 'aluno' | 'preceptor' | 'supervisor';
+  role: UserRole;
   mustChangePassword?: boolean;
   mustSetEmail?: boolean;
+  /** Perfis não-aluno precisam aceitar o termo de responsabilidade de acesso. */
+  mustAcceptTerms?: boolean;
+}
+
+/** Termo de responsabilidade exibido a preceptores, professores e coordenadoras. */
+export interface ResponsibilityTerms {
+  titulo: string;
+  versao: string;
+  itens: string[];
 }
 
 export interface RegisterDto {
@@ -134,6 +146,12 @@ export interface UserDto {
   mustChangePassword?: boolean;
   mustSetEmail?: boolean;
   isActive?: boolean;
+  /** Aluno autorizado a chegar após o horário previsto de início do estágio. */
+  allowLateArrival?: boolean;
+  /** Motivo da autorização de atraso, registrado pelo professor. */
+  lateArrivalNote?: string;
+  /** Quando o usuário aceitou o termo de responsabilidade de acesso. */
+  termsAcceptedAt?: string;
 }
 
 export interface SemesterHistory {
@@ -284,4 +302,67 @@ export interface GroupMember {
   semester?: number;
   shift?: string;
   isActive: boolean;
+}
+
+// ── Irregularidades de ponto ─────────────────────────────────────────────────
+/**
+ * Fluxo: o aluno registra (ou o sistema gera) → o preceptor toma ciência e pode
+ * observar → a ocorrência vai ao professor → o professor aprova ou nega.
+ * O preceptor nunca decide a situação.
+ */
+export type IrregularityStatus =
+  | 'aguardando_preceptor'
+  | 'aguardando_professor'
+  | 'aprovada'
+  | 'negada';
+
+export type IrregularityType =
+  | 'atraso'
+  | 'esquecimento_checkin'
+  | 'esquecimento_checkout'
+  | 'fora_do_local'
+  | 'falta_justificada'
+  | 'problema_tecnico'
+  | 'outro';
+
+export interface Irregularity {
+  id: string;
+  studentId: string;
+  studentName: string;
+  studentRgm?: string;
+  attendanceRecordId?: string;
+  scheduleId?: string;
+  type: IrregularityType;
+  occurredOn: string;
+  description: string;
+  status: IrregularityStatus;
+
+  preceptorId?: string;
+  preceptorName?: string;
+  preceptorNote?: string;
+  preceptorAcknowledgedAt?: string;
+
+  professorId?: string;
+  professorName?: string;
+  professorNote?: string;
+  professorDecidedAt?: string;
+
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IrregularitySummary {
+  aguardandoPreceptor: number;
+  aguardandoProfessor: number;
+  aprovadas: number;
+  negadas: number;
+  total: number;
+}
+
+export interface CreateIrregularity {
+  type: IrregularityType;
+  occurredOn: string;
+  description: string;
+  attendanceRecordId?: string;
+  scheduleId?: string;
 }
