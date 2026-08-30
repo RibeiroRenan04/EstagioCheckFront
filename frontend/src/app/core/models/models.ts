@@ -366,3 +366,26 @@ export interface CreateIrregularity {
   attendanceRecordId?: string;
   scheduleId?: string;
 }
+
+// ── Rodízios do preceptor com os alunos alocados ─────────────────────────────
+/**
+ * Um rodízio e os alunos alocados nele. Cada aluno já vem com o contexto do
+ * rodízio (período, turno, local e datas), então escolher um da lista preenche
+ * o acompanhamento inteiro.
+ */
+export interface ScheduleStudents {
+  scheduleId: string;
+  periodLabel: string;
+  shift: string;
+  activityType: string;
+  groupId?: string;
+  groupCode?: string;
+  groupName?: string;
+  locationId?: string;
+  locationName?: string;
+  startDate: string;
+  endDate: string;
+  /** Rodízio vigente hoje. */
+  current: boolean;
+  students: StudentLookup[];
+}
