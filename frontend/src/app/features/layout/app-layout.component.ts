@@ -39,6 +39,8 @@ export class AppLayoutComponent {
     { path: '/app/certificados', label: 'Certificados',      icon: 'workspace_premium', roles: ['aluno','supervisor','coordenadora'] },
     { path: '/app/acompanhamentos', label: 'Acompanhamentos', icon: 'description',    roles: ['aluno','preceptor','supervisor','coordenadora'] },
     { path: '/app/preceptor',   label: 'Meus alunos',        icon: 'star',             roles: ['preceptor'] },
+    { path: '/app/unidades',    label: 'Unidades de saúde',  icon: 'domain',           roles: ['aluno','preceptor','supervisor','coordenadora'] },
+    { path: '/app/alocacoes',   label: 'Alocações',          icon: 'assignment_ind',   roles: ['supervisor','coordenadora'] },
     { path: '/app/locais',      label: 'Locais',             icon: 'business',         roles: ['supervisor','coordenadora'] },
     { path: '/app/rodizios',    label: 'Rodízios',           icon: 'calendar_today',   roles: ['supervisor','coordenadora'] },
     { path: '/app/usuarios',    label: 'Usuários',           icon: 'people',           roles: ['supervisor','coordenadora'] },

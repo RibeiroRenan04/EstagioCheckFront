@@ -55,6 +55,32 @@ export const routes: Routes = [
         canActivate: [roleGuard(['preceptor'])],
         loadComponent: () => import('./features/preceptor/preceptor.component').then(m => m.PreceptorComponent)
       },
+      // ── Unidades de saúde ──
+      // Leitura liberada a todos os perfis (o aluno precisa ver a própria unidade);
+      // as ações de escrita são bloqueadas na API e escondidas nas telas.
+      {
+        path: 'unidades',
+        loadComponent: () => import('./features/unidades/unidades.component').then(m => m.UnidadesComponent)
+      },
+      {
+        path: 'unidades/importar',
+        canActivate: [roleGuard(['supervisor'])],
+        loadComponent: () => import('./features/unidades/importar-unidades.component').then(m => m.ImportarUnidadesComponent)
+      },
+      {
+        path: 'unidades/revisao',
+        canActivate: [roleGuard(['supervisor', 'coordenadora'])],
+        loadComponent: () => import('./features/unidades/revisao-localizacao.component').then(m => m.RevisaoLocalizacaoComponent)
+      },
+      {
+        path: 'unidades/:id',
+        loadComponent: () => import('./features/unidades/unidade-detalhe.component').then(m => m.UnidadeDetalheComponent)
+      },
+      {
+        path: 'alocacoes',
+        canActivate: [roleGuard(['supervisor', 'coordenadora'])],
+        loadComponent: () => import('./features/alocacoes/alocacoes.component').then(m => m.AlocacoesComponent)
+      },
       {
         path: 'locais',
         canActivate: [roleGuard(['supervisor', 'coordenadora'])],
