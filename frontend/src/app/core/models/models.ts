@@ -389,3 +389,159 @@ export interface ScheduleStudents {
   current: boolean;
   students: StudentLookup[];
 }
+
+// ── Unidades de saúde ────────────────────────────────────────────────────────
+/** Situação da geocodificação de uma unidade. */
+export type StatusGeocodificacao =
+  | 'pendente' | 'processando' | 'sucesso'
+  | 'nao_encontrado' | 'erro' | 'revisao_manual';
+
+/** De onde vieram as coordenadas da unidade. */
+export type OrigemCoordenadas = 'NOMINATIM' | 'MANUAL' | 'OUTRO';
+
+export interface UnidadeSaude {
+  id: string;
+  nome: string;
+  tipo?: string;
+  endereco?: string;
+  numero?: string;
+  complemento?: string;
+  bairro?: string;
+  cidade?: string;
+  uf?: string;
+  cep?: string;
+  telefone?: string;
+  enderecoCompleto: string;
+
+  latitude: number;
+  longitude: number;
+  temCoordenadas: boolean;
+  raioMetros: number;
+  origemCoordenadas?: OrigemCoordenadas;
+  statusGeocodificacao?: StatusGeocodificacao;
+  enderecoGeocodificado?: string;
+  precisaoLocalizacao?: string;
+  geocodificadoEm?: string;
+
+  ehInstituicao: boolean;
+  inicioTurno?: string;
+  fimTurno?: string;
+  codigoCnes?: string;
+  ativo: boolean;
+
+  /** Estagiários com alocação ativa nesta unidade. */
+  estagiariosAtivos: number;
+  criadoEm: string;
+  atualizadoEm: string;
+}
+
+export interface CriarUnidadeSaude {
+  nome: string;
+  tipo?: string;
+  endereco?: string;
+  numero?: string;
+  complemento?: string;
+  bairro?: string;
+  cidade?: string;
+  uf?: string;
+  cep?: string;
+  telefone?: string;
+  latitude?: number;
+  longitude?: number;
+  raioMetros?: number;
+  ehInstituicao?: boolean;
+  inicioTurno?: string;
+  fimTurno?: string;
+  geocodificarAgora?: boolean;
+}
+
+export interface GeocodificacaoResposta {
+  sucesso: boolean;
+  status: StatusGeocodificacao;
+  latitude?: number;
+  longitude?: number;
+  enderecoEncontrado?: string;
+  precisao?: string;
+  mensagem?: string;
+  veioDoCache: boolean;
+}
+
+// ── Importação de unidades ───────────────────────────────────────────────────
+export interface ImportPreviewLinha {
+  linha: number;
+  nome: string;
+  tipo?: string;
+  enderecoResumo: string;
+  cidade?: string;
+  cep?: string;
+  /** "valida" | "invalida" | "duplicada" | "duplicada_endereco_alterado" */
+  status: string;
+  erros: string[];
+  unidadeExistenteId?: string;
+}
+
+export interface ImportPreview {
+  previewId: string;
+  totalLinhas: number;
+  validas: number;
+  invalidas: number;
+  duplicadas: number;
+  erros: string[];
+  linhas: ImportPreviewLinha[];
+  podeConfirmar: boolean;
+}
+
+export interface ImportacaoResultado {
+  loteId: string;
+  criadas: number;
+  atualizadas: number;
+  ignoradas: number;
+  enfileiradasParaGeocodificar: number;
+  mensagem: string;
+}
+
+export interface ImportacaoProgresso {
+  loteId: string;
+  total: number;
+  processados: number;
+  pendentes: number;
+  sucesso: number;
+  revisaoManual: number;
+  naoEncontrado: number;
+  erro: number;
+  percentualConcluido: number;
+  concluido: boolean;
+}
+
+// ── Alocação de estagiários ──────────────────────────────────────────────────
+export interface Alocacao {
+  id: string;
+  unidadeId: string;
+  unidadeNome: string;
+  unidadeCidade?: string;
+  estagiarioId: string;
+  estagiarioNome: string;
+  estagiarioRgm?: string;
+  estagiarioEmail?: string;
+  estagiarioSemestre?: number;
+  estagiarioTurno?: string;
+  dataInicio: string;
+  dataFim?: string;
+  ativo: boolean;
+  observacao?: string;
+  criadoPorNome?: string;
+  criadoEm: string;
+}
+
+export interface EstagiarioDisponivel {
+  id: string;
+  nome: string;
+  rgm?: string;
+  email?: string;
+  semestre?: number;
+  turno?: string;
+  turma?: string;
+  /** Unidade em que já está alocado, se houver. */
+  unidadeAtualId?: string;
+  unidadeAtualNome?: string;
+}
