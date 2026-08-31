@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, guestGuard, firstAccessGuard } from './core/guards/auth.guard';
+import { authGuard, guestGuard, firstAccessGuard, termsGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
@@ -17,6 +17,11 @@ export const routes: Routes = [
     path: 'primeiro-acesso',
     canActivate: [firstAccessGuard],
     loadComponent: () => import('./features/primeiro-acesso/primeiro-acesso.component').then(m => m.PrimeiroAcessoComponent)
+  },
+  {
+    path: 'termo-responsabilidade',
+    canActivate: [termsGuard],
+    loadComponent: () => import('./features/termo/termo-responsabilidade.component').then(m => m.TermoResponsabilidadeComponent)
   },
   {
     path: 'app',
@@ -42,33 +47,37 @@ export const routes: Routes = [
         loadComponent: () => import('./features/acompanhamentos/acompanhamentos.component').then(m => m.AcompanhamentosComponent)
       },
       {
+        path: 'irregularidades',
+        loadComponent: () => import('./features/irregularidades/irregularidades.component').then(m => m.IrregularidadesComponent)
+      },
+      {
         path: 'preceptor',
         canActivate: [roleGuard(['preceptor'])],
         loadComponent: () => import('./features/preceptor/preceptor.component').then(m => m.PreceptorComponent)
       },
       {
         path: 'locais',
-        canActivate: [roleGuard(['supervisor'])],
+        canActivate: [roleGuard(['supervisor', 'coordenadora'])],
         loadComponent: () => import('./features/locais/locais.component').then(m => m.LocaisComponent)
       },
       {
         path: 'rodizios',
-        canActivate: [roleGuard(['supervisor'])],
+        canActivate: [roleGuard(['supervisor', 'coordenadora'])],
         loadComponent: () => import('./features/rodizios/rodizios.component').then(m => m.RodiziosComponent)
       },
       {
         path: 'usuarios',
-        canActivate: [roleGuard(['supervisor'])],
+        canActivate: [roleGuard(['supervisor', 'coordenadora'])],
         loadComponent: () => import('./features/usuarios/usuarios.component').then(m => m.UsuariosComponent)
       },
       {
         path: 'relatorios',
-        canActivate: [roleGuard(['supervisor'])],
+        canActivate: [roleGuard(['supervisor', 'coordenadora'])],
         loadComponent: () => import('./features/relatorios/relatorios.component').then(m => m.RelatoriosComponent)
       },
       {
         path: 'certificados',
-        canActivate: [roleGuard(['aluno', 'supervisor'])],
+        canActivate: [roleGuard(['aluno', 'supervisor', 'coordenadora'])],
         loadComponent: () => import('./features/certificados/certificados.component').then(m => m.CertificadosComponent)
       }
     ]
